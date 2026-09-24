@@ -80,7 +80,7 @@ pipeline {
         stage ('Deploy to Kubernetes') {
             steps {
                 withKubeConfig(credentialsId: 'k8-cred', namespace: 'webapps', serverUrl: 'https://19B17EAAA5E9C98D506F5924D0E56C61.gr7.ap-south-1.eks.amazonaws.com') {
-                    sh "kubectl apply -f kubernetes/deployment.yaml -n webapps"
+                    sh "kubectl apply -f terraform/kubernetes/deployment.yaml -n webapps"
                 }
 
             }
