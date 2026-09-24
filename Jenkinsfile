@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('Git Checkout') {
             steps {
-                git branch: 'main', credentialsId: 'github-cred', url: 'https:///github.com/<your>/repo.git'
+                git branch: 'main', credentialsId: 'github-cred', url: 'https://github.com/Vignesh72-dev/Blogging-app.git'
             }
         }
         stage('compile') {
@@ -79,7 +79,7 @@ pipeline {
 
         stage ('Deploy to Kubernetes') {
             steps {
-                withKubeConfig(credentialsId: 'k8-cred', namespace: 'webapps', serverUrl: '<eks_api_server_url>') {
+                withKubeConfig(credentialsId: 'k8-cred', namespace: 'webapps', serverUrl: '<eks_api_server_url>https://19B17EAAA5E9C98D506F5924D0E56C61.gr7.ap-south-1.eks.amazonaws.com') {
                     sh "kubectl apply -f deployment-service.yaml -n webapps"
                 }
 
