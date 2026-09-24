@@ -23,7 +23,7 @@ spec:
       containers:
         - name: blogging-app
           image: vigneshnataraj/myapp:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           env: 

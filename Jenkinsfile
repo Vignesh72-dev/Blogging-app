@@ -8,6 +8,8 @@ pipeline {
 
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
+        IMAGE_NAME = 'vigneshnataraj/myapp'
+        IMAGE_TAG = "${env.BUILD_NUMBER}"
     }
 
     stages {
@@ -66,10 +68,9 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred') {
-                        sh "docker build -t vigneshnataraj/myapp:${BUILD_NUMBER} ."
-                        sh "docker tag vigneshnataraj/myapp:${BUILD_NUMBER} vigneshnataraj/myapp:latest"
-                        sh "docker push vigneshnataraj/myapp:${BUILD_NUMBER}"
-                        sh "docker push vigneshnataraj/myapp:latest"
+                        sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                        sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
+                        
                     }
                 }
             }
@@ -83,6 +84,17 @@ pipeline {
             steps {
                 withKubeConfig(credentialsId: 'k8-cred', namespace: 'webapps', serverUrl: 'https://19B17EAAA5E9C98D506F5924D0E56C61.gr7.ap-south-1.eks.amazonaws.com') {
                     sh "kubectl apply -f terraform/kubernetes/deployment.yaml -n webapps"
+                    sh """
+                        kubectl set image deployment/blogging-app \
+                        blogging-app=${IMAGE_NAME}:${IMAGE_TAG} \
+                        -n webapps
+                    """
+                    sh """
+                        kubectl rollout status deployment/blogging-app \
+                        -n webapps \
+                        --timeout=5m
+                    """
+
                 }
 
             }
