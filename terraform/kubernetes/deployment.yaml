@@ -7,6 +7,11 @@ metadata:
     app: blogging-app
 spec:
   replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingupdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: blogging-app
