@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('Git Checkout') {
             steps {
-                git branch: 'main', credentialsId: 'github-cred', url: 'https://github.com/Vignesh72-dev/Blogging-app.git'
+                git branch: 'main', credentialsId: 'git-cred', url: 'https://github.com/Vignesh72-dev/Blogging-app.git'
             }
         }
         stage('compile') {
@@ -36,7 +36,7 @@ pipeline {
 
         stage ('Sonarqube Analysis') {
             steps {
-                withSonarQubeEnv(credentialsId: 'sonar-token') {
+                withSonarQubeEnv(installationName: 'SonarQube', credentialsId: 'sonar-token') {
                     sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=MyApp -Dsonar.projectKey=MyApp"
               
                 }
@@ -45,7 +45,7 @@ pipeline {
         
         stage ('Quality Gate') {
             steps {
-                waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+                waitForQualityGate abortPipeline: false
             }
         }
         
@@ -57,7 +57,7 @@ pipeline {
         
         stage ('Deploy to Nexus') {
             steps {
-                withMaven(globalMavneSettingsConfig: 'global-settings') {
+                withMaven(globalMavenSettingsConfig: 'global-settings') {
                     sh "mvn deploy"
                 }
             }
@@ -79,8 +79,8 @@ pipeline {
 
         stage ('Deploy to Kubernetes') {
             steps {
-                withKubeConfig(credentialsId: 'k8-cred', namespace: 'webapps', serverUrl: '<eks_api_server_url>https://19B17EAAA5E9C98D506F5924D0E56C61.gr7.ap-south-1.eks.amazonaws.com') {
-                    sh "kubectl apply -f deployment-service.yaml -n webapps"
+                withKubeConfig(credentialsId: 'k8-cred', namespace: 'webapps', serverUrl: 'https://19B17EAAA5E9C98D506F5924D0E56C61.gr7.ap-south-1.eks.amazonaws.com') {
+                    sh "kubectl apply -f kubernetes/deployment.yaml -n webapps"
                 }
 
             }
@@ -88,7 +88,7 @@ pipeline {
 
         stage ('verify Deployment') {
             steps {
-                withKubeConfig(credentialsId: 'k8-cred', namespace: 'webapps', serverUrl: '<eks_api_server_url>') {
+                withKubeConfig(credentialsId: 'k8-cred', namespace: 'webapps', serverUrl: 'https://19B17EAAA5E9C98D506F5924D0E56C61.gr7.ap-south-1.eks.amazonaws.com') {
                     sh "kubectl get pods -n webapps"
                     sh "kubectl get svc -n webapps"
                 }
