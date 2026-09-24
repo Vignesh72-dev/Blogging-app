@@ -1,0 +1,26 @@
+# Terraform
+**/.terraform/
+**/.terraform.lock.hcl
+**/terraform.tfstate
+**/terraform.tfstate.backup
+**/terraform.tfstate.*.backup
+**/*.tfvars
+**/*.tfvars.json
+**/crash.log
+**/override.tf
+**/override.tf.json
+
+# Jenkins (if any local Jenkins home/workspace artifacts end up here)
+.jenkins/
+
+# OS/editor junk
+.DS_Store
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Env/secrets
+.env
+*.pem
+*.key.DS_Store

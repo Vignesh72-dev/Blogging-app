@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Blogging App</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .post { border: 1px solid #ddd; border-radius: 6px; padding: 1rem; margin-bottom: 1rem; }
+        .post h3 { margin: 0 0 6px; }
+        .meta { color: #888; font-size: 0.85rem; margin-bottom: 8px; }
+        .actions a, .actions button { margin-right: 8px; font-size: 0.85rem; }
+        .new-btn { background: #333; color: #fff; padding: 8px 14px; border-radius: 4px; text-decoration: none; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Blog Posts</h1>
+    <div>
+        <a class="new-btn" th:href="@{/posts/new}">+ New Post</a>
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<div th:if="${#lists.isEmpty(posts)}">
+    <p>No posts yet. Create the first one!</p>
+</div>
+
+<div class="post" th:each="post : ${posts}">
+    <h3 th:text="${post.title}">Title</h3>
+    <div class="meta">
+        by <span th:text="${post.author}">Author</span> ·
+        <span th:text="${#temporals.format(post.createdAt, 'dd MMM yyyy, HH:mm')}">date</span>
+    </div>
+    <p th:text="${post.content}">Content</p>
+    <div class="actions">
+        <a th:href="@{/posts/{id}/edit(id=${post.id})}">Edit</a>
+        <form th:action="@{/posts/{id}/delete(id=${post.id})}" method="post" style="display:inline;">
+            <button type="submit" onclick="return confirm('Delete this post?');">Delete</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

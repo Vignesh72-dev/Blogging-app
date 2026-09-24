@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: blogging-app
+  namespace: webapps
+  labels:
+    app: blogging-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: blogging-app
+  template:
+    metadata:
+      labels:
+        app: blogging-app
+    spec:
+      containers:
+        - name: blogging-app
+          image: vigneshnataraj/blogging-app:latest
+          ports:
+            - containerPort: 8080
+          env: 
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "384Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness 
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: 
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+      volumes:
+        - name: data
+          emptyDir: {}
+      imagePullSecrets:
+        - name: regcred
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: blogging-app-service
+  namespace: webapps
+spec:
+  type: LoadBalancer
+  selector: 
+    app: blogging-app
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+        
+        
